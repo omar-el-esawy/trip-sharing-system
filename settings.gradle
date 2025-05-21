@@ -1,0 +1,4 @@
+rootProject.name = 'trip-sharing-system'
+include 'trip-api-service'
+include 'matching-service'
+include 'notification-service'
