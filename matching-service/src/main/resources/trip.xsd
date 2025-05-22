@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://tripsharing.com/soap"
+           xmlns:tns="http://tripsharing.com/soap"
+           elementFormDefault="qualified">
+
+    <!-- Trip DTO Definition -->
+    <xs:complexType name="TripDTO">
+        <xs:sequence>
+            <xs:element name="tripId" type="xs:string"/>
+            <xs:element name="userId" type="xs:string"/>
+            <xs:element name="startLat" type="xs:double"/>
+            <xs:element name="startLng" type="xs:double"/>
+            <xs:element name="endLat" type="xs:double"/>
+            <xs:element name="endLng" type="xs:double"/>
+            <xs:element name="travelMode" type="xs:string"/>
+            <xs:element name="startTime" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Create -->
+    <xs:element name="TripSubmissionRequest" type="tns:TripDTO"/>
+    <xs:element name="TripSubmissionResponse" type="tns:TripSubmissionResult"/>
+
+    <!-- Read -->
+    <xs:element name="GetTripRequest" type="tns:TripIdRequest"/>
+    <xs:element name="GetTripResponse" type="tns:TripDTO"/>
+
+    <!-- Update -->
+    <xs:element name="UpdateTripRequest" type="tns:TripDTO"/>
+    <xs:element name="UpdateTripResponse" type="tns:TripSubmissionResult"/>
+
+    <!-- Delete -->
+    <xs:element name="DeleteTripRequest" type="tns:TripIdRequest"/>
+    <xs:element name="DeleteTripResponse" type="tns:TripSubmissionResult"/>
+
+    <!-- Shared -->
+    <xs:complexType name="TripIdRequest">
+        <xs:sequence>
+            <xs:element name="tripId" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TripSubmissionResult">
+        <xs:sequence>
+            <xs:element name="success" type="xs:boolean"/>
+            <xs:element name="message" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
