@@ -1,6 +1,8 @@
 package com.tripsharing.api.resource;
 
-import com.tripsharing.api.dto.TripDTO;
+//import com.tripsharing.api.dto.TripDTO;
+import com.client.generated.TripDTO;
+import com.tripsharing.api.service.MatchingSoapClient;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -13,6 +15,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TripResource {
 
     private static final Map<String, TripDTO> tripStore = new ConcurrentHashMap<>();
+    private static final MatchingSoapClient matchingSoapClient;
+
+    static {
+        try {
+            matchingSoapClient = new MatchingSoapClient();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @POST
     public Response createTrip(TripDTO trip) {
@@ -20,7 +31,7 @@ public class TripResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Trip ID required").build();
         }
         tripStore.put(trip.getTripId(), trip);
-
+        matchingSoapClient.submitTrip(trip);
 
         return Response.status(Response.Status.CREATED).entity(trip).build();
     }
@@ -32,6 +43,7 @@ public class TripResource {
         if (trip == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Trip not found").build();
         }
+        matchingSoapClient.getTrip(tripId);
         return Response.ok(trip).build();
     }
 
@@ -43,6 +55,8 @@ public class TripResource {
         }
         trip.setTripId(tripId);
         tripStore.put(tripId, trip);
+
+        matchingSoapClient.updateTrip(trip);
         return Response.ok(trip).build();
     }
 
@@ -53,6 +67,8 @@ public class TripResource {
         if (removed == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Trip not found").build();
         }
+
+        matchingSoapClient.deleteTrip(tripId);
         return Response.noContent().build();
     }
 }
