@@ -1,6 +1,5 @@
 package com.tripsharing.api.resource;
 
-//import com.tripsharing.api.dto.TripDTO;
 import com.client.generated.TripDTO;
 import com.tripsharing.api.service.MatchingSoapClient;
 import jakarta.ws.rs.*;
