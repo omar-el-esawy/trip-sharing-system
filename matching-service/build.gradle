@@ -24,6 +24,9 @@ dependencies {
     implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.4'
     implementation 'wsdl4j:wsdl4j:1.6.3'
 
+    implementation 'com.aerospike:aerospike-client:6.2.0'
+    implementation 'org.apache.kafka:kafka-clients:3.6.1'
+
     jaxb 'org.glassfish.jaxb:jaxb-xjc:4.0.5'
 }
 

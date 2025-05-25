@@ -9,6 +9,7 @@
         <xs:sequence>
             <xs:element name="tripId" type="xs:string"/>
             <xs:element name="userId" type="xs:string"/>
+            <xs:element name="userEmail" type="xs:string"/> <!-- Added userEmail -->
             <xs:element name="startLat" type="xs:double"/>
             <xs:element name="startLng" type="xs:double"/>
             <xs:element name="endLat" type="xs:double"/>
