@@ -11,6 +11,11 @@ public class KafkaProducerUtil {
         producer.send(record);
     }
 
+    public static void sendTripMatchedEvent(String tripId) {
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.MATCHED_TOPIC, tripId, tripId);
+        producer.send(record);
+    }
+
     public static void close() {
         producer.close();
     }

@@ -4,7 +4,7 @@ import com.example.trip.soap.TripMatchingServiceImpl;
 import com.example.trip.kafka.TripScheduledConsumer;
 import jakarta.xml.ws.Endpoint;
 
-public class Main {
+public class MatchingServiceApplication {
     public static void main(String[] args) {
         // Start Kafka consumer in background
         Thread consumerThread = new Thread(new TripScheduledConsumer());
