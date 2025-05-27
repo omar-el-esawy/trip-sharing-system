@@ -2,6 +2,7 @@ package com.tripsharing.api.resource;
 
 import com.client.generated.TripDTO;
 import com.tripsharing.api.service.MatchingSoapClient;
+import com.tripsharing.api.kafka.KafkaProducerUtil; // Add this import
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -31,6 +32,9 @@ public class TripResource {
         }
         tripStore.put(trip.getTripId(), trip);
         matchingSoapClient.submitTrip(trip);
+
+        // Publish tripId to Kafka after successful SOAP call
+        KafkaProducerUtil.sendTripScheduledEvent(trip.getTripId());
 
         return Response.status(Response.Status.CREATED).entity(trip).build();
     }
