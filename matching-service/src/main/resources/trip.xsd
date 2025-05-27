@@ -14,6 +14,7 @@
             <xs:element name="startLng" type="xs:double"/>
             <xs:element name="endLat" type="xs:double"/>
             <xs:element name="endLng" type="xs:double"/>
+            <xs:element name="matched" type="xs:boolean"/>
             <xs:element name="travelMode" type="xs:string"/>
             <xs:element name="startTime" type="xs:dateTime"/>
         </xs:sequence>

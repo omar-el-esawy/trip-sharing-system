@@ -13,6 +13,14 @@ configurations {
     jaxb
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.example.trip.MatchingServiceApplication'
+        )
+    }
+}
+
 dependencies {
 
     implementation("jakarta.xml.ws:jakarta.xml.ws-api:4.0.2")

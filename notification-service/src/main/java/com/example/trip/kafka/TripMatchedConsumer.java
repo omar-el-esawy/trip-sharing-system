@@ -1,8 +1,11 @@
 package com.example.trip.kafka;
 
+import com.example.trip.service.EmailSchedulerService;
+import jakarta.mail.MessagingException;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 
@@ -25,7 +28,21 @@ public class TripMatchedConsumer implements Runnable {
         }
     }
 
-    private void sendEmail(String tripId) {
+    private void sendEmail(String tripOwnerEmail) {
+
+        EmailSchedulerService emailService = new EmailSchedulerService();
+        try {
+            emailService.sendEmail(
+                    tripOwnerEmail,
+                    "Trip Matched Notification",
+                    "Your trip has been successfully matched with another user."
+            );
+        } catch (MessagingException e) {
+            System.err.println("Failed to send email for trip: " + tripOwnerEmail);
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
         // Placeholder for email logic
         System.out.println("Sending email for matched trip: " + tripId);
     }
