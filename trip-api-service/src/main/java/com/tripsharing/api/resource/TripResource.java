@@ -32,6 +32,15 @@ public class TripResource {
         tripStore.put(trip.getTripId(), trip);
         matchingSoapClient.submitTrip(trip);
 
+<<<<<<< Updated upstream
+=======
+        System.out.println("Trip created: " + trip.getTripId());
+        // Publish tripId to Kafka after successful SOAP call
+        KafkaProducerUtil.sendTripScheduledEvent(trip.getTripId());
+
+        System.out.println("Trip scheduled event sent to Kafka for tripId: " + trip.getTripId());
+
+>>>>>>> Stashed changes
         return Response.status(Response.Status.CREATED).entity(trip).build();
     }
 

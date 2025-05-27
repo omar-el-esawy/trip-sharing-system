@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+
 }
 
 group = 'org.example'
@@ -13,6 +14,14 @@ configurations {
     wsimportClasspath {
         canBeResolved = true
         canBeConsumed = false
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.tripsharing.api.TripApiServiceApplication'
+        )
     }
 }
 

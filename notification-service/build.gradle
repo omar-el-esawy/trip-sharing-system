@@ -12,7 +12,20 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+    // Add javax.mail-api for javax.mail.Transport and related classes
+    implementation 'javax.mail:javax.mail-api:1.6.2'
 }
+
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.example.trip.NotificationServiceApplication'
+        )
+    }
+}
+
 
 test {
     useJUnitPlatform()
