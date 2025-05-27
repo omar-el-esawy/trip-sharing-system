@@ -42,8 +42,5 @@ public class TripMatchedConsumer implements Runnable {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
-        // Placeholder for email logic
-        System.out.println("Sending email for matched trip: " + tripId);
     }
 }

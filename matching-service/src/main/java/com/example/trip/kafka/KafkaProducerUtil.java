@@ -6,10 +6,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 public class KafkaProducerUtil {
     private static final KafkaProducer<String, String> producer = new KafkaProducer<>(KafkaConfig.producerProps());
 
-    public static void sendTripScheduledEvent(String tripId) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.TOPIC, tripId, tripId);
-        producer.send(record);
-    }
 
     public static void sendTripMatchedEvent(String tripId) {
         ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.MATCHED_TOPIC, tripId, tripId);
