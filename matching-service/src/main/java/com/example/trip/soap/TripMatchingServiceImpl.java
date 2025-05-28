@@ -2,6 +2,7 @@ package com.example.trip.soap;
 
 import com.example.trip.TripDTO;
 import com.example.trip.TripSubmissionResult;
+import com.example.trip.TripOperationResponse;
 import jakarta.jws.WebService;
 import com.example.trip.service.TripService;
 import com.example.trip.repository.AerospikeTripRepository;
@@ -14,10 +15,10 @@ public class TripMatchingServiceImpl implements TripMatchingService {
     public TripMatchingServiceImpl() {
         // In production, use dependency injection or a factory
         this.tripService = new TripService(
-            new AerospikeTripRepository());
+                new AerospikeTripRepository());
     }
 
-    public TripSubmissionResult submitTrip(TripDTO trip) {
+    public TripOperationResponse submitTrip(TripDTO trip) {
         return tripService.submitTrip(trip);
     }
 
@@ -25,7 +26,7 @@ public class TripMatchingServiceImpl implements TripMatchingService {
         return tripService.getTrip(tripId);
     }
 
-    public TripSubmissionResult updateTrip(TripDTO trip) {
+    public TripOperationResponse updateTrip(TripDTO trip) {
         return tripService.updateTrip(trip);
     }
 

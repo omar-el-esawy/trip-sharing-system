@@ -20,13 +20,27 @@ public class AerospikeTripRepository {
 
     private static final String NAMESPACE = "test";
     private static final String SET_NAME = "trips";
+    private static final String TRIP_ID_PREFIX = "TRIP";
+    private static long tripIdCounter = System.currentTimeMillis();
     private final AerospikeClient client;
 
     public AerospikeTripRepository() {
         this.client = new AerospikeClient("localhost", 3000);
     }
 
-    public void save(TripDTO trip) {
+    public String generateTripId() {
+        // Thread-safe increment
+        synchronized (AerospikeTripRepository.class) {
+            return TRIP_ID_PREFIX + (++tripIdCounter);
+        }
+    }
+
+    public TripDTO save(TripDTO trip) {
+        // Auto-generate tripId if not set
+        if (trip.getTripId() == null || trip.getTripId().isEmpty()) {
+            trip.setTripId(generateTripId());
+        }
+
         WritePolicy wp = new WritePolicy();
         wp.sendKey = true;
 
@@ -41,9 +55,9 @@ public class AerospikeTripRepository {
         Bin travelMode = new Bin("travelMode", trip.getTravelMode());
         Bin startTime = new Bin("startTime", trip.getStartTime().toString());
         Bin matched = new Bin("matched", trip.isMatched());
-        // Ensure tripId is also stored as a bin for completeness
-        Bin tripId = new Bin("tripId", trip.getTripId());
-        client.put(wp, key, tripId, userId, userEmail, startLat, startLng, endLat, endLng, travelMode, startTime, matched);
+        client.put(wp, key, userId, userEmail, startLat, startLng, endLat, endLng, travelMode, startTime, matched);
+
+        return trip;
     }
 
     public void markAsMatched(String tripId) {
@@ -58,7 +72,7 @@ public class AerospikeTripRepository {
         List<TripDTO> unmatchedTrips = new ArrayList<>();
 
         ScanCallback callback = (key, record) -> {
-            if (key.userKey == null ) {
+            if (key.userKey == null) {
                 System.out.println("Skipping key with null userKey: " + key);
                 // Skip keys that do not have a userKey of type String
                 return;
@@ -119,8 +133,8 @@ public class AerospikeTripRepository {
         }
     }
 
-    public void update(TripDTO trip) {
-        save(trip);
+    public TripDTO update(TripDTO trip) {
+        return save(trip);
     }
 
     public void delete(String tripId) {

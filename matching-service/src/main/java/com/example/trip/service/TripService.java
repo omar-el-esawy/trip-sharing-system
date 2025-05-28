@@ -2,6 +2,7 @@ package com.example.trip.service;
 
 import com.example.trip.TripDTO;
 import com.example.trip.TripSubmissionResult;
+import com.example.trip.TripOperationResponse;
 import com.example.trip.repository.AerospikeTripRepository;
 
 public class TripService {
@@ -12,29 +13,30 @@ public class TripService {
         this.repository = repository;
     }
 
-    public TripSubmissionResult submitTrip(TripDTO trip) {
+    public TripOperationResponse submitTrip(TripDTO trip) {
+        trip.setTripId(repository.generateTripId());
         repository.save(trip);
-        TripSubmissionResult result = new TripSubmissionResult();
-        result.setSuccess(true);
-        result.setMessage("Trip created");
-        return result;
+        TripOperationResponse response = new TripOperationResponse();
+        response.setMessage("Trip created");
+        response.setTrip(trip);
+        return response;
     }
 
     public TripDTO getTrip(String tripId) {
         return repository.findById(tripId);
     }
 
-    public TripSubmissionResult updateTrip(TripDTO trip) {
-        TripSubmissionResult result = new TripSubmissionResult();
+    public TripOperationResponse updateTrip(TripDTO trip) {
+        TripOperationResponse response = new TripOperationResponse();
         if (repository.findById(trip.getTripId()) == null) {
-            result.setSuccess(false);
-            result.setMessage("Trip not found");
+            response.setMessage("Trip not found");
+            response.setTrip(null);
         } else {
             repository.update(trip);
-            result.setSuccess(true);
-            result.setMessage("Trip updated");
+            response.setMessage("Trip updated");
+            response.setTrip(trip);
         }
-        return result;
+        return response;
     }
 
     public TripSubmissionResult deleteTrip(String tripId) {

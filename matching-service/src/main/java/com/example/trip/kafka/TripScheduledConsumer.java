@@ -1,10 +1,9 @@
 package com.example.trip.kafka;
 
 import com.example.trip.repository.AerospikeTripRepository;
-import com.example.trip.service.TripMatchingService;
+import com.example.trip.service.MatchingAlgoService;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import com.example.trip.kafka.KafkaProducerUtil;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -14,13 +13,13 @@ import java.util.Collections;
 public class TripScheduledConsumer implements Runnable {
     private final KafkaConsumer<String, String> consumer;
     private final AerospikeTripRepository tripRepository;
-    private final TripMatchingService tripMatchingService;
+    private final MatchingAlgoService matchingAlgoService;
 
     public TripScheduledConsumer() {
         this.consumer = new KafkaConsumer<>(KafkaConfig.consumerProps());
         this.consumer.subscribe(Collections.singletonList(KafkaConfig.TOPIC));
         this.tripRepository = new AerospikeTripRepository();
-        this.tripMatchingService = new TripMatchingService(tripRepository);
+        this.matchingAlgoService = new MatchingAlgoService(tripRepository);
     }
 
     @Override
@@ -30,7 +29,7 @@ public class TripScheduledConsumer implements Runnable {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
                 records.forEach(record -> {
                     String tripId = record.value();
-                    tripMatchingService.matchTrip(tripId);
+                    matchingAlgoService.matchTrip(tripId);
                 });
             }
         } catch (Exception e) {

@@ -7,19 +7,19 @@ import com.example.trip.kafka.KafkaProducerUtil;
 import java.util.List;
 import java.util.Map;
 
-public class TripMatchingService {
+public class MatchingAlgoService {
 
     private final AerospikeTripRepository tripRepository;
     private final double maxDistance;
     private final long maxTimeDiffSeconds;
 
-    public TripMatchingService(AerospikeTripRepository tripRepository) {
+    public MatchingAlgoService(AerospikeTripRepository tripRepository) {
         this.tripRepository = tripRepository;
 
         // Load matching config from application.yml using YamlConfigUtil
         double tempMaxDistance = 0.5;
         long tempMaxTimeDiffSeconds = 15 * 60;
-        try (java.io.InputStream in = TripMatchingService.class.getClassLoader().getResourceAsStream("application.yml")) {
+        try (java.io.InputStream in = MatchingAlgoService.class.getClassLoader().getResourceAsStream("application.yml")) {
             if (in != null) {
                 org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml();
                 Map<String, Object> obj = yaml.load(in);

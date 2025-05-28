@@ -1,6 +1,7 @@
 package com.example.trip.service;
 
 import com.example.trip.TripDTO;
+import com.example.trip.TripOperationResponse;
 import com.example.trip.TripSubmissionResult;
 import com.example.trip.repository.AerospikeTripRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +24,14 @@ class TripServiceTest {
     @Test
     void submitTrip_shouldSaveTripAndReturnSuccess() {
         TripDTO trip = new TripDTO();
-        TripSubmissionResult result = tripService.submitTrip(trip);
+        when(repository.generateTripId()).thenReturn("generatedId");
+
+        TripOperationResponse response = tripService.submitTrip(trip);
 
         verify(repository).save(trip);
-        assertTrue(result.isSuccess());
-        assertEquals("Trip created", result.getMessage());
+        assertEquals("Trip created", response.getMessage());
+        assertNotNull(response.getTrip());
+        assertEquals("generatedId", response.getTrip().getTripId());
     }
 
     @Test
@@ -46,10 +50,10 @@ class TripServiceTest {
         trip.setTripId("id2");
         when(repository.findById("id2")).thenReturn(null);
 
-        TripSubmissionResult result = tripService.updateTrip(trip);
+        TripOperationResponse response = tripService.updateTrip(trip);
 
-        assertFalse(result.isSuccess());
-        assertEquals("Trip not found", result.getMessage());
+        assertEquals("Trip not found", response.getMessage());
+        assertNull(response.getTrip());
         verify(repository).findById("id2");
         verify(repository, never()).update(any());
     }
@@ -60,10 +64,10 @@ class TripServiceTest {
         trip.setTripId("id3");
         when(repository.findById("id3")).thenReturn(trip);
 
-        TripSubmissionResult result = tripService.updateTrip(trip);
+        TripOperationResponse response = tripService.updateTrip(trip);
 
-        assertTrue(result.isSuccess());
-        assertEquals("Trip updated", result.getMessage());
+        assertEquals("Trip updated", response.getMessage());
+        assertEquals(trip, response.getTrip());
         verify(repository).findById("id3");
         verify(repository).update(trip);
     }

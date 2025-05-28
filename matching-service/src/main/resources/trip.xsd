@@ -20,9 +20,17 @@
         </xs:sequence>
     </xs:complexType>
 
+    <!-- New response type for submit and update -->
+    <xs:complexType name="TripOperationResponse">
+        <xs:sequence>
+            <xs:element name="message" type="xs:string"/>
+            <xs:element name="trip" type="tns:TripDTO"/>
+        </xs:sequence>
+    </xs:complexType>
+
     <!-- Create -->
     <xs:element name="TripSubmissionRequest" type="tns:TripDTO"/>
-    <xs:element name="TripSubmissionResponse" type="tns:TripSubmissionResult"/>
+    <xs:element name="TripSubmissionResponse" type="tns:TripOperationResponse"/>
 
     <!-- Read -->
     <xs:element name="GetTripRequest" type="tns:TripIdRequest"/>
@@ -30,7 +38,7 @@
 
     <!-- Update -->
     <xs:element name="UpdateTripRequest" type="tns:TripDTO"/>
-    <xs:element name="UpdateTripResponse" type="tns:TripSubmissionResult"/>
+    <xs:element name="UpdateTripResponse" type="tns:TripOperationResponse"/>
 
     <!-- Delete -->
     <xs:element name="DeleteTripRequest" type="tns:TripIdRequest"/>

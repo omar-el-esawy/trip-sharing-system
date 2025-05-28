@@ -17,15 +17,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class TripMatchingServiceTest {
+class MatchingAlgoServiceTest {
 
     private AerospikeTripRepository tripRepository;
-    private TripMatchingService tripMatchingService;
+    private MatchingAlgoService matchingAlgoService;
 
     @BeforeEach
     void setUp() {
         tripRepository = mock(AerospikeTripRepository.class);
-        tripMatchingService = new TripMatchingService(tripRepository);
+        matchingAlgoService = new MatchingAlgoService(tripRepository);
     }
 
     private TripDTO createTrip(String tripId, double lat, double lng, LocalDateTime startTime, boolean matched, String email) throws Exception {
@@ -50,9 +50,9 @@ class TripMatchingServiceTest {
         TripDTO b = createTrip("b", 1.1, 1.1, LocalDateTime.now().plusMinutes(5), false, "b@email.com");
 
         // Use reflection to access private method
-        boolean result = (boolean) TripMatchingService.class
+        boolean result = (boolean) MatchingAlgoService.class
                 .getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class)
-                .invoke(tripMatchingService, a, b);
+                .invoke(matchingAlgoService, a, b);
 
         assertTrue(result);
     }
@@ -62,9 +62,9 @@ class TripMatchingServiceTest {
         TripDTO a = createTrip("a", 1.0, 1.0, LocalDateTime.now(), false, "a@email.com");
         TripDTO b = createTrip("b", 10.0, 10.0, LocalDateTime.now().plusMinutes(5), false, "b@email.com");
 
-        boolean result = (boolean) TripMatchingService.class
+        boolean result = (boolean) MatchingAlgoService.class
                 .getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class)
-                .invoke(tripMatchingService, a, b);
+                .invoke(matchingAlgoService, a, b);
 
         assertFalse(result);
     }
@@ -74,18 +74,18 @@ class TripMatchingServiceTest {
         TripDTO a = createTrip("a", 1.0, 1.0, LocalDateTime.now(), false, "a@email.com");
         TripDTO b = createTrip("b", 1.0, 1.0, LocalDateTime.now().plusHours(2), false, "b@email.com");
 
-        boolean result = (boolean) TripMatchingService.class
+        boolean result = (boolean) MatchingAlgoService.class
                 .getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class)
-                .invoke(tripMatchingService, a, b);
+                .invoke(matchingAlgoService, a, b);
 
         assertFalse(result);
     }
 
     @Test
     void testDistance() throws Exception {
-        double d = (double) TripMatchingService.class
+        double d = (double) MatchingAlgoService.class
                 .getDeclaredMethod("distance", double.class, double.class, double.class, double.class)
-                .invoke(tripMatchingService, 0, 0, 3, 4);
+                .invoke(matchingAlgoService, 0, 0, 3, 4);
         assertEquals(5.0, d, 0.0001);
     }
 
@@ -99,7 +99,7 @@ class TripMatchingServiceTest {
         when(tripRepository.findAllUnmatchedExcluding(tripId)).thenReturn(Collections.singletonList(candidate));
 
         try (MockedStatic<KafkaProducerUtil> kafkaMock = mockStatic(KafkaProducerUtil.class)) {
-            tripMatchingService.matchTrip(tripId);
+            matchingAlgoService.matchTrip(tripId);
 
             verify(tripRepository).markAsMatched(tripId);
             verify(tripRepository).markAsMatched(candidate.getTripId());
@@ -118,7 +118,7 @@ class TripMatchingServiceTest {
         when(tripRepository.findAllUnmatchedExcluding(tripId)).thenReturn(Collections.singletonList(candidate));
 
         try (MockedStatic<KafkaProducerUtil> kafkaMock = mockStatic(KafkaProducerUtil.class)) {
-            tripMatchingService.matchTrip(tripId);
+            matchingAlgoService.matchTrip(tripId);
 
             verify(tripRepository, never()).markAsMatched(anyString());
             kafkaMock.verifyNoInteractions();
@@ -130,14 +130,14 @@ class TripMatchingServiceTest {
         String tripId = "t1";
         when(tripRepository.findById(tripId)).thenReturn(null);
 
-        tripMatchingService.matchTrip(tripId);
+        matchingAlgoService.matchTrip(tripId);
         verify(tripRepository, never()).findAllUnmatchedExcluding(anyString());
 
         TripDTO matchedTrip = mock(TripDTO.class);
         when(tripRepository.findById(tripId)).thenReturn(matchedTrip);
         when(matchedTrip.isMatched()).thenReturn(true);
 
-        tripMatchingService.matchTrip(tripId);
+        matchingAlgoService.matchTrip(tripId);
         verify(tripRepository, never()).findAllUnmatchedExcluding(anyString());
     }
 }

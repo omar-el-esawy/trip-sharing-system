@@ -1,11 +1,14 @@
 package com.tripsharing.api.resource;
 
 import com.client.generated.TripDTO;
+import com.client.generated.TripOperationResponse;
+import com.client.generated.TripSubmissionResult;
 import com.tripsharing.api.service.MatchingSoapClient;
-import com.tripsharing.api.kafka.KafkaProducerUtil; // Add this import
+import com.tripsharing.api.kafka.KafkaProducerUtil;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Consumes(MediaType.APPLICATION_JSON)
 public class TripResource {
 
-    private static final Map<String, TripDTO> tripStore = new ConcurrentHashMap<>();
     private static final MatchingSoapClient matchingSoapClient;
 
     static {
@@ -27,51 +29,37 @@ public class TripResource {
 
     @POST
     public Response createTrip(TripDTO trip) {
-        if (trip == null || trip.getTripId() == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Trip ID required").build();
-        }
-        tripStore.put(trip.getTripId(), trip);
-        matchingSoapClient.submitTrip(trip);
+        TripOperationResponse response = matchingSoapClient.submitTrip(trip);
 
         // Publish tripId to Kafka after successful SOAP call
-        KafkaProducerUtil.sendTripScheduledEvent(trip.getTripId());
+        KafkaProducerUtil.sendTripScheduledEvent(response.getTrip().getTripId());
 
-        return Response.status(Response.Status.CREATED).entity(trip).build();
+        return Response.status(Response.Status.CREATED).entity(response).build();
     }
 
     @GET
     @Path("/{tripId}")
     public Response getTrip(@PathParam("tripId") String tripId) {
-        TripDTO trip = tripStore.get(tripId);
-        if (trip == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Trip not found").build();
-        }
-        matchingSoapClient.getTrip(tripId);
+        TripDTO trip = matchingSoapClient.getTrip(tripId);
         return Response.ok(trip).build();
     }
 
     @PUT
     @Path("/{tripId}")
     public Response updateTrip(@PathParam("tripId") String tripId, TripDTO trip) {
-        if (!tripStore.containsKey(tripId)) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Trip not found").build();
-        }
         trip.setTripId(tripId);
-        tripStore.put(tripId, trip);
-
-        matchingSoapClient.updateTrip(trip);
-        return Response.ok(trip).build();
+        TripOperationResponse response = matchingSoapClient.updateTrip(trip);
+        return Response.ok(response).build();
     }
 
     @DELETE
     @Path("/{tripId}")
     public Response deleteTrip(@PathParam("tripId") String tripId) {
-        TripDTO removed = tripStore.remove(tripId);
-        if (removed == null) {
+        TripSubmissionResult tripSubmissionResult = matchingSoapClient.deleteTrip(tripId);
+        if (tripSubmissionResult == null || !tripSubmissionResult.isSuccess()) {
             return Response.status(Response.Status.NOT_FOUND).entity("Trip not found").build();
         }
 
-        matchingSoapClient.deleteTrip(tripId);
-        return Response.noContent().build();
+        return Response.ok(tripSubmissionResult.getMessage()).build();
     }
 }
