@@ -4,6 +4,8 @@ import com.example.trip.repository.AerospikeTripRepository;
 import com.example.trip.service.MatchingAlgoService;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -11,6 +13,8 @@ import java.util.Collections;
 // Import the matching service
 
 public class TripScheduledConsumer implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(TripScheduledConsumer.class);
+
     private final KafkaConsumer<String, String> consumer;
     private final AerospikeTripRepository tripRepository;
     private final MatchingAlgoService matchingAlgoService;
@@ -33,9 +37,9 @@ public class TripScheduledConsumer implements Runnable {
                 });
             }
         } catch (Exception e) {
-            System.err.println("❗ Consumer error: " + e.getMessage());
+            logger.error("❗ Consumer error: {}", e.getMessage(), e);
         } finally {
-            System.out.println("🛑 Closing Kafka consumer...");
+            logger.info("🛑 Closing Kafka consumer...");
             consumer.close();
         }
     }

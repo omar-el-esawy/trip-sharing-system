@@ -14,9 +14,12 @@ import java.util.Map;
 import org.example.YamlInjector;
 import org.example.YamlValue;
 import org.yaml.snakeyaml.Yaml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmailSchedulerService {
 
+    private static final Logger logger = LoggerFactory.getLogger(EmailSchedulerService.class);
 
     @YamlValue(key = "mail.smtpHost")
     private String smtpHost;
@@ -28,14 +31,11 @@ public class EmailSchedulerService {
     private String password;
 
     public EmailSchedulerService() {
-
         YamlInjector.inject(this);
 
-
-        System.out.println("EmailSchedulerService initialized with SMTP host: " + smtpHost + ", port: " + smtpPort);
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + (password != null && !password.isEmpty() ? "******" : "not set"));
-
+        logger.info("EmailSchedulerService initialized with SMTP host: {}, port: {}", smtpHost, smtpPort);
+        logger.info("Username: {}", username);
+        logger.info("Password: {}", (password != null && !password.isEmpty() ? "******" : "not set"));
     }
 
     public EmailSchedulerService(String smtpHost, int smtpPort, String username, String password) {
@@ -45,7 +45,6 @@ public class EmailSchedulerService {
         this.smtpPort = smtpPort;
         this.username = username;
         this.password = password;
-
     }
 
     public EmailResponse sendEmail(String to, String subject, String body) {
@@ -75,6 +74,5 @@ public class EmailSchedulerService {
             return new EmailResponse(false, "Error sending email: " + e.getMessage());
         }
     }
-
 
 }

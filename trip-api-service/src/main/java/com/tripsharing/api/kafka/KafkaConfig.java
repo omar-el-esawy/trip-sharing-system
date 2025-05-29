@@ -15,9 +15,12 @@ public class KafkaConfig {
     @YamlValue(key = "kafka.topic")
     public static String topic;
 
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(KafkaConfig.class);
+
     static {
         YamlInjector.inject(KafkaConfig.class);
-        System.out.println("KafkaConfig initialized with bootstrapServers: " + bootstrapServers + ", topic: " + topic);
+        logger.info("KafkaConfig initialized with bootstrapServers: {}, topic: {}", bootstrapServers, topic);
     }
 
     public static Properties producerProps() {

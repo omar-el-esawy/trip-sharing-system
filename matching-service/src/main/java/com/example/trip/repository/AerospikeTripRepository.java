@@ -6,6 +6,8 @@ import com.aerospike.client.policy.WritePolicy;
 import com.example.trip.TripDTO;
 import org.example.YamlInjector;
 import org.example.YamlValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -17,6 +19,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class AerospikeTripRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(AerospikeTripRepository.class);
 
     @YamlValue(key = "aerospike.namespace")
     private String namespace;
@@ -83,7 +87,7 @@ public class AerospikeTripRepository {
 
         ScanCallback callback = (key, record) -> {
             if (key.userKey == null) {
-                System.out.println("Skipping key with null userKey: " + key);
+                logger.warn("Skipping key with null userKey: {}", key);
                 // Skip keys that do not have a userKey of type String
                 return;
             }

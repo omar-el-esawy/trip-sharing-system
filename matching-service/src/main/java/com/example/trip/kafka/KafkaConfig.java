@@ -6,10 +6,14 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.example.YamlInjector;
 import org.example.YamlValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class KafkaConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
 
     @YamlValue(key = "kafka.bootstrapServers")
     public static String bootstrapServers;
@@ -26,7 +30,8 @@ public class KafkaConfig {
     static {
         // Load properties from YAML file
         YamlInjector.inject(KafkaConfig.class);
-        System.out.println("KafkaConfig initialized with bootstrapServers: " + bootstrapServers + ", topic: " + topic + ", matchedTopic: " + matchedTopic + ", groupId: " + groupId);
+        logger.info("KafkaConfig initialized with bootstrapServers: {}, topic: {}, matchedTopic: {}, groupId: {}",
+                bootstrapServers, topic, matchedTopic, groupId);
     }
 
     public static Properties producerProps() {
@@ -38,7 +43,7 @@ public class KafkaConfig {
     }
 
     public static Properties consumerProps() {
-        System.out.println("KafkaConfig.consumerProps() called with bootstrapServers: " + bootstrapServers + ", groupId: " + groupId);
+        logger.info("KafkaConfig.consumerProps() called with bootstrapServers: {}, groupId: {}", bootstrapServers, groupId);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);

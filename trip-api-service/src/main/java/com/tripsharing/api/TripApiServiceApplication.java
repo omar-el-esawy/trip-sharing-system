@@ -6,8 +6,12 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import java.net.URI;
 import org.example.YamlInjector;
 import org.example.YamlValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TripApiServiceApplication {
+
+    private static final Logger logger = LoggerFactory.getLogger(TripApiServiceApplication.class);
 
     @YamlValue(key = "api.baseUri")
     private static String baseUri;
@@ -15,7 +19,7 @@ public class TripApiServiceApplication {
     public static void main(String[] args) {
         YamlInjector.inject(TripApiServiceApplication.class);
         final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(baseUri), new JerseyConfig());
-        System.out.printf("🚀 Trip API Service started at %s%nPress Ctrl+C to stop.%n", baseUri);
+        logger.info("🚀 Trip API Service started at {}\nPress Ctrl+C to stop.", baseUri);
         try {
             Thread.currentThread().join();
         } catch (InterruptedException e) {

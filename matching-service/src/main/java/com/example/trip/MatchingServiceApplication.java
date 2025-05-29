@@ -6,8 +6,12 @@ import com.example.trip.kafka.TripScheduledConsumer;
 import jakarta.xml.ws.Endpoint;
 import org.example.YamlInjector;
 import org.example.YamlValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MatchingServiceApplication {
+
+    private static final Logger logger = LoggerFactory.getLogger(MatchingServiceApplication.class);
 
     @YamlValue(key = "soap.endpointUrl")
     private static String endpointUrl;
@@ -21,6 +25,6 @@ public class MatchingServiceApplication {
         consumerThread.start();
 
         Endpoint.publish(endpointUrl, new TripMatchingServiceImpl());
-        System.out.println("🚀 Matching SOAP Service running on " + endpointUrl + "?wsdl");
+        logger.info("🚀 Matching SOAP Service running on {}?wsdl", endpointUrl);
     }
 }

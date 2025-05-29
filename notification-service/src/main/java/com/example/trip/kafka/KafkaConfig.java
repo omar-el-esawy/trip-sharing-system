@@ -1,13 +1,18 @@
 package com.example.trip.kafka;
 
+// ...existing imports...
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.example.YamlInjector;
 import org.example.YamlValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class KafkaConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
 
     @YamlValue(key = "kafka.bootstrapServers")
     public static String bootstrapServers;
@@ -21,9 +26,9 @@ public class KafkaConfig {
     static {
         // Load properties from YAML file
         YamlInjector.inject(KafkaConfig.class);
-        System.out.println("KafkaConfig initialized with bootstrapServers: " + bootstrapServers + ", matchedTopic: " + matchedTopic + ", groupId: " + groupId);
+        logger.info("KafkaConfig initialized with bootstrapServers: {}, matchedTopic: {}, groupId: {}",
+                bootstrapServers, matchedTopic, groupId);
     }
-
 
     public static Properties consumerProps() {
         Properties props = new Properties();

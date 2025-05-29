@@ -5,10 +5,14 @@ import com.example.trip.repository.AerospikeTripRepository;
 import com.example.trip.kafka.KafkaProducerUtil;
 import org.example.YamlInjector;
 import org.example.YamlValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class MatchingAlgoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MatchingAlgoService.class);
 
     private final AerospikeTripRepository tripRepository;
 
@@ -26,11 +30,11 @@ public class MatchingAlgoService {
     public void matchTrip(String tripId) {
         TripDTO newTrip = tripRepository.findById(tripId);
         if (newTrip == null || newTrip.isMatched()) {
-            System.out.println("❌ Trip not found or already matched: " + tripId);
+            logger.warn("❌ Trip not found or already matched: {}", tripId);
             return;
         }
 
-        System.out.println("🔍 Matching tripId: " + tripId);
+        logger.info("🔍 Matching tripId: {}", tripId);
 
         // Fetch all unmatched trips excluding this one
         List<TripDTO> unmatchedTrips = tripRepository.findAllUnmatchedExcluding(tripId);
@@ -45,12 +49,12 @@ public class MatchingAlgoService {
                 KafkaProducerUtil.sendTripMatchedEvent(newTrip.getUserEmail());
                 KafkaProducerUtil.sendTripMatchedEvent(candidate.getUserEmail());
 
-                System.out.println("✅ Matched " + tripId + " with " + candidate.getTripId());
+                logger.info("✅ Matched {} with {}", tripId, candidate.getTripId());
                 return;
             }
         }
 
-        System.out.println("⚠️ No match found for tripId: " + tripId);
+        logger.info("⚠️ No match found for tripId: {}", tripId);
     }
 
     private boolean isMatch(TripDTO a, TripDTO b) {
@@ -67,3 +71,4 @@ public class MatchingAlgoService {
         return Math.sqrt(Math.pow(lat1 - lat2, 2) + Math.pow(lng1 - lng2, 2));
     }
 }
+
