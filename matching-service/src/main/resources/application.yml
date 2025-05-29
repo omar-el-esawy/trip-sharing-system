@@ -1,3 +1,20 @@
+soap:
+  endpointUrl: http://localhost:8082/ws/trip
+
 matching:
   maxDistance: 0.5
   maxTimeDiffSeconds: 900
+
+kafka:
+  bootstrapServers: localhost:9092
+  topic: trip-scheduled
+  matchedTopic: trip-matched
+  groupId: matching-service-group
+
+
+aerospike:
+  namespace: test
+  setName: trips
+  tripIdPrefix: TRIP
+  host: localhost
+  port: 3000

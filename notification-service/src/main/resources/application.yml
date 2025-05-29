@@ -3,3 +3,8 @@ mail:
   smtpPort: 587
   username: oesawy610@gmail.com
   password: ojxrtnqigjdhushn
+
+kafka:
+  bootstrapServers: localhost:9092
+  matchedTopic: trip-matched
+  groupId: notification-service-group

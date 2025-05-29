@@ -8,7 +8,7 @@ public class KafkaProducerUtil {
 
 
     public static void sendTripMatchedEvent(String tripId) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.MATCHED_TOPIC, tripId, tripId);
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.matchedTopic, tripId, tripId);
         producer.send(record);
     }
 

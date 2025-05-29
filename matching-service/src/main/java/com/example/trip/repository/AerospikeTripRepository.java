@@ -4,12 +4,12 @@ import com.aerospike.client.*;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.WritePolicy;
 import com.example.trip.TripDTO;
+import org.example.YamlInjector;
+import org.example.YamlValue;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,20 +18,32 @@ import java.util.List;
 
 public class AerospikeTripRepository {
 
-    private static final String NAMESPACE = "test";
-    private static final String SET_NAME = "trips";
-    private static final String TRIP_ID_PREFIX = "TRIP";
+    @YamlValue(key = "aerospike.namespace")
+    private String namespace;
+
+    @YamlValue(key = "aerospike.setName")
+    private String setName;
+
+    @YamlValue(key = "aerospike.tripIdPrefix")
+    private String tripIdPrefix;
+
+    @YamlValue(key = "aerospike.host")
+    private String host;
+
+    @YamlValue(key = "aerospike.port")
+    private int port;
+
     private static long tripIdCounter = System.currentTimeMillis();
     private final AerospikeClient client;
 
     public AerospikeTripRepository() {
-        this.client = new AerospikeClient("localhost", 3000);
+        YamlInjector.inject(this);
+        this.client = new AerospikeClient(host, port);
     }
 
     public String generateTripId() {
-        // Thread-safe increment
         synchronized (AerospikeTripRepository.class) {
-            return TRIP_ID_PREFIX + (++tripIdCounter);
+            return tripIdPrefix + (++tripIdCounter);
         }
     }
 
@@ -44,7 +56,7 @@ public class AerospikeTripRepository {
         WritePolicy wp = new WritePolicy();
         wp.sendKey = true;
 
-        Key key = new Key(NAMESPACE, SET_NAME, trip.getTripId());
+        Key key = new Key(namespace, setName, trip.getTripId());
 
         Bin userId = new Bin("userId", trip.getUserId());
         Bin userEmail = new Bin("userEmail", trip.getUserEmail());
@@ -61,14 +73,12 @@ public class AerospikeTripRepository {
     }
 
     public void markAsMatched(String tripId) {
-        Key key = new Key(NAMESPACE, SET_NAME, tripId);
+        Key key = new Key(namespace, setName, tripId);
         Bin matchedBin = new Bin("matched", true);
         client.put(null, key, matchedBin);
     }
 
     public List<TripDTO> findAllUnmatchedExcluding(String excludedTripId) {
-
-
         List<TripDTO> unmatchedTrips = new ArrayList<>();
 
         ScanCallback callback = (key, record) -> {
@@ -100,12 +110,12 @@ public class AerospikeTripRepository {
             }
         };
 
-        client.scanAll(null, NAMESPACE, SET_NAME, callback);
+        client.scanAll(null, namespace, setName, callback);
         return unmatchedTrips;
     }
 
     public TripDTO findById(String tripId) {
-        Key key = new Key(NAMESPACE, SET_NAME, tripId);
+        Key key = new Key(namespace, setName, tripId);
         Record record = client.get(null, key);
 
         if (record == null) return null;
@@ -138,7 +148,7 @@ public class AerospikeTripRepository {
     }
 
     public void delete(String tripId) {
-        Key key = new Key(NAMESPACE, SET_NAME, tripId);
+        Key key = new Key(namespace, setName, tripId);
         client.delete(null, key);
     }
 }

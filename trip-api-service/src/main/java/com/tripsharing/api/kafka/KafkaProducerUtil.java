@@ -7,7 +7,7 @@ public class KafkaProducerUtil {
     private static final KafkaProducer<String, String> producer = new KafkaProducer<>(KafkaConfig.producerProps());
 
     public static void sendTripScheduledEvent(String tripId) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.TOPIC, tripId, tripId);
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.topic, tripId, tripId);
         producer.send(record);
     }
 

@@ -1,4 +1,4 @@
-package com.tripsharing.api.resource;
+package com.tripsharing.api.controller;
 
 import com.client.generated.TripDTO;
 import com.client.generated.TripOperationResponse;
@@ -9,13 +9,10 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 @Path("/trips")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class TripResource {
+public class TripController {
 
     private static final MatchingSoapClient matchingSoapClient;
 

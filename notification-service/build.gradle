@@ -15,6 +15,9 @@ dependencies {
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
     // Add javax.mail-api for javax.mail.Transport and related classes
     implementation 'javax.mail:javax.mail-api:1.6.2'
+
+    implementation project(':common-module')
+
 }
 
 

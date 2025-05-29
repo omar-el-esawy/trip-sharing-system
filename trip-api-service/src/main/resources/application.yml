@@ -1,0 +1,6 @@
+kafka:
+  bootstrapServers: localhost:9092
+  topic: trip-scheduled
+
+soap:
+  wsdlUrl: http://localhost:8082/ws/trip?wsdl

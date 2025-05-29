@@ -41,6 +41,8 @@ dependencies {
 
     wsimportClasspath 'com.sun.xml.ws:jaxws-tools:4.0.3'
 
+    implementation project(':common-module')
+
 
 }
 

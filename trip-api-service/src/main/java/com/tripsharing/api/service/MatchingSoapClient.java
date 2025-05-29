@@ -3,15 +3,19 @@ package com.tripsharing.api.service;
 import com.client.generated.*;
 
 import java.net.URL;
+import org.example.YamlInjector;
+import org.example.YamlValue;
 
 public class MatchingSoapClient {
 
-    private static final String WSDL_URL = "http://localhost:8082/ws/trip?wsdl";
+    @YamlValue(key = "soap.wsdlUrl")
+    private String wsdlUrl;
 
     private final TripMatchingService servicePort;
 
     public MatchingSoapClient() throws Exception {
-        TripMatchingServiceImplService service = new TripMatchingServiceImplService(new URL(WSDL_URL));
+        YamlInjector.inject(this);
+        TripMatchingServiceImplService service = new TripMatchingServiceImplService(new URL(wsdlUrl));
         servicePort = service.getTripMatchingServiceImplPort();
     }
 

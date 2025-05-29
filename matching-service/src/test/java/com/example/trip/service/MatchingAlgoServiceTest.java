@@ -49,23 +49,23 @@ class MatchingAlgoServiceTest {
         TripDTO a = createTrip("a", 1.0, 1.0, LocalDateTime.now(), false, "a@email.com");
         TripDTO b = createTrip("b", 1.1, 1.1, LocalDateTime.now().plusMinutes(5), false, "b@email.com");
 
-        // Use reflection to access private method
-        boolean result = (boolean) MatchingAlgoService.class
-                .getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class)
-                .invoke(matchingAlgoService, a, b);
+        var method = MatchingAlgoService.class.getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class);
+        method.setAccessible(true);
 
+        boolean result = (boolean) method.invoke(matchingAlgoService, a, b);
         assertTrue(result);
     }
+
 
     @Test
     void testIsMatch_false_whenFarInDistance() throws Exception {
         TripDTO a = createTrip("a", 1.0, 1.0, LocalDateTime.now(), false, "a@email.com");
         TripDTO b = createTrip("b", 10.0, 10.0, LocalDateTime.now().plusMinutes(5), false, "b@email.com");
 
-        boolean result = (boolean) MatchingAlgoService.class
-                .getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class)
-                .invoke(matchingAlgoService, a, b);
+        var method = MatchingAlgoService.class.getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class);
+        method.setAccessible(true);
 
+        boolean result = (boolean) method.invoke(matchingAlgoService, a, b);
         assertFalse(result);
     }
 
@@ -74,18 +74,22 @@ class MatchingAlgoServiceTest {
         TripDTO a = createTrip("a", 1.0, 1.0, LocalDateTime.now(), false, "a@email.com");
         TripDTO b = createTrip("b", 1.0, 1.0, LocalDateTime.now().plusHours(2), false, "b@email.com");
 
-        boolean result = (boolean) MatchingAlgoService.class
-                .getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class)
-                .invoke(matchingAlgoService, a, b);
+        var method = MatchingAlgoService.class.getDeclaredMethod("isMatch", TripDTO.class, TripDTO.class);
+        method.setAccessible(true);
 
+        boolean result = (boolean) method.invoke(matchingAlgoService, a, b);
         assertFalse(result);
     }
 
     @Test
     void testDistance() throws Exception {
-        double d = (double) MatchingAlgoService.class
-                .getDeclaredMethod("distance", double.class, double.class, double.class, double.class)
-                .invoke(matchingAlgoService, 0, 0, 3, 4);
+        var method = MatchingAlgoService.class.getDeclaredMethod("distance", double.class, double.class, double.class, double.class);
+        method.setAccessible(true);
+
+        double d = (double) method.invoke(matchingAlgoService, 0, 0, 5, 0);
+
+
+
         assertEquals(5.0, d, 0.0001);
     }
 

@@ -1,0 +1,3 @@
+mail:
+  smtpHost: smtp.gmail.com
+  smtpPort: 587

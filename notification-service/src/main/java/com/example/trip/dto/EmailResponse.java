@@ -1,4 +1,4 @@
-package com.example.trip.payload;
+package com.example.trip.dto;
 
 public class EmailResponse {
 

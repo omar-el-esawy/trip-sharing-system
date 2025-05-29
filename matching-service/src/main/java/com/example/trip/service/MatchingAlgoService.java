@@ -3,41 +3,24 @@ package com.example.trip.service;
 import com.example.trip.TripDTO;
 import com.example.trip.repository.AerospikeTripRepository;
 import com.example.trip.kafka.KafkaProducerUtil;
+import org.example.YamlInjector;
+import org.example.YamlValue;
 
 import java.util.List;
-import java.util.Map;
 
 public class MatchingAlgoService {
 
     private final AerospikeTripRepository tripRepository;
-    private final double maxDistance;
-    private final long maxTimeDiffSeconds;
+
+    @YamlValue(key = "matching.maxDistance")
+    private double maxDistance;
+
+    @YamlValue(key = "matching.maxTimeDiffSeconds")
+    private long maxTimeDiffSeconds;
 
     public MatchingAlgoService(AerospikeTripRepository tripRepository) {
         this.tripRepository = tripRepository;
-
-        // Load matching config from application.yml using YamlConfigUtil
-        double tempMaxDistance = 0.5;
-        long tempMaxTimeDiffSeconds = 15 * 60;
-        try (java.io.InputStream in = MatchingAlgoService.class.getClassLoader().getResourceAsStream("application.yml")) {
-            if (in != null) {
-                org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml();
-                Map<String, Object> obj = yaml.load(in);
-                Map<String, Object> matching = (Map<String, Object>) obj.get("matching");
-                if (matching != null) {
-                    if (matching.get("maxDistance") != null) {
-                        tempMaxDistance = ((Number) matching.get("maxDistance")).doubleValue();
-                    }
-                    if (matching.get("maxTimeDiffSeconds") != null) {
-                        tempMaxTimeDiffSeconds = ((Number) matching.get("maxTimeDiffSeconds")).longValue();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Warning: Could not load matching config from application.yml, using defaults.");
-        }
-        this.maxDistance = tempMaxDistance;
-        this.maxTimeDiffSeconds = tempMaxTimeDiffSeconds;
+        YamlInjector.inject(this);
     }
 
     public void matchTrip(String tripId) {

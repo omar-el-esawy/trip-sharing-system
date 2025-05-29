@@ -1,4 +1,4 @@
-package com.example.trip.payload;
+package com.example.trip.dto;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

@@ -14,7 +14,7 @@ public class TripMatchedConsumer implements Runnable {
 
     public TripMatchedConsumer() {
         this.consumer = new KafkaConsumer<>(KafkaConfig.consumerProps());
-        this.consumer.subscribe(Collections.singletonList(KafkaConfig.MATCHED_TOPIC));
+        this.consumer.subscribe(Collections.singletonList(KafkaConfig.matchedTopic));
     }
 
     @Override
@@ -31,16 +31,10 @@ public class TripMatchedConsumer implements Runnable {
     private void sendEmail(String tripOwnerEmail) {
 
         EmailSchedulerService emailService = new EmailSchedulerService();
-        try {
-            emailService.sendEmail(
-                    tripOwnerEmail,
-                    "Trip Matched Notification",
-                    "Your trip has been successfully matched with another user."
-            );
-        } catch (MessagingException e) {
-            System.err.println("Failed to send email for trip: " + tripOwnerEmail);
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        emailService.sendEmail(
+                tripOwnerEmail,
+                "Trip Matched Notification",
+                "Your trip has been successfully matched with another user."
+        );
     }
 }

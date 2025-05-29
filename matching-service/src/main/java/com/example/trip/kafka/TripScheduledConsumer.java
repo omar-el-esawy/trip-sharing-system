@@ -17,7 +17,7 @@ public class TripScheduledConsumer implements Runnable {
 
     public TripScheduledConsumer() {
         this.consumer = new KafkaConsumer<>(KafkaConfig.consumerProps());
-        this.consumer.subscribe(Collections.singletonList(KafkaConfig.TOPIC));
+        this.consumer.subscribe(Collections.singletonList(KafkaConfig.topic));
         this.tripRepository = new AerospikeTripRepository();
         this.matchingAlgoService = new MatchingAlgoService(tripRepository);
     }
