@@ -1,8 +1,9 @@
-package com.tripsharing.api.service;
+package com.tripsharing.api.soap;
 
 import com.client.generated.*;
 
 import java.net.URL;
+
 import org.example.YamlInjector;
 import org.example.YamlValue;
 
